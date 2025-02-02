@@ -1,11 +1,13 @@
 let trackNames = ["Drums", "Bass", "Chords"];
-let shapeTypes = ["square", "triangle"]; // Assign shapes to tracks
+let shapeTypes = ["square", "triangle", "circle"]; // Assign shapes to tracks
 let loops = [];
 let visualizers = [];
 let n = 2; // Number of alternative loops per track
 let assignedKeys = ['1', '8', '2', '9', '3', '0']; // Define keys for loops
 let recorder;
 let player;
+let analyzer = new Tone.Waveform(1024);
+// player.connect(analyzer);
 let isRecording = false;
 let angle = 0;
 let cval = 0;
@@ -36,57 +38,43 @@ function windowResized() {
 }
 
 function draw(){
-  // blendMode(BLEND);
-  background(100);
-  // blendMode(DIFFERENCE);
-  
+  blendMode(BLEND);
+  background(0, 50);
+  blendMode(DIFFERENCE);
+  let minDimension = min(width, height);
+  let spacing = minDimension / 8;
+
   for (let vis of visualizers) {
     vis.update();
     vis.display();
   }
-//   let c1 = color(cval, 0, 255 - cval);
-//   let c2 = color(255 - cval, 0, cval);
 
-//   // Update color over time
-//   // Update cval smoothly between 0 and 255
-
-//   cval += direction;
-//   if (cval >= 255 || cval <= 0) {
-//     direction *= -1; // Reverse direction when hitting limits
-//   }
-
-//   let minDimension = min(width, height);
-//   let spacing = minDimension / 8;
-//   let x = width / 2;
-//   let y = height / 2;
-//   let amount1 = sin(angle) / 2 + 0.6;
-//   let amount2 = cos(angle) / 2 + 0.6;
-
-//   let thickness = (minDimension / 20);
-//   strokeWeight(thickness);
-
-//   push();
-//   stroke(255 - cval, 0, cval);
-//   fill(cval, 255 - cval, 0);
-//   translate(x, y); // rotate about center of canvas
-//   rectMode(CENTER); // rotate square around its center point
-//   rotate(angle); // clockwise
-//   rect(0, 0, spacing * 3, spacing * 3);
-//   pop();
-
-//   // push();
-//   // translate(x, y); // rotate about center of canvas
-//   // rectMode(CENTER);
-//   // stroke(255 - cval, 0, cval);
-//   // fill(cval, 255 - cval, 0);
-//   // // stroke(cval, 0, 255 - cval);
-//   // // fill(255 - cval, 0, cval);
-//   // rotate(-angle); // counterclockwise
-//   // rect(0, 0, spacing * 3 * amount2, spacing * 3 * amount2);
-//   // pop();
-
-//   // angle += 0.03; // set speed of rotation
-}
+  let waveform = analyzer.getValue();
+    
+  // fill(255);
+  translate(width/2, height/2);
+  beginShape();
+  // divide the 360 degrees into equal increments
+  let points = floor(analyzer.getValue().length / 36);
+  for (let i = 0; i < waveform.length; i+= points) {
+    // use polar coordinates
+    let phi = radians(map(i, 0, waveform.length, 0, 360));
+    let radius = map(waveform[i], -1, 1, 0, 4.5*spacing);
+    
+    // polar to cartesian    
+    let x = radius * cos(phi);
+    let y = radius * sin(phi);
+    strokeWeight(minDimension/400);
+    stroke(255,0,0);
+    // noStroke();
+    fill(0,0,255);
+    // vertex(x, y);
+    // curveVertex(x, y);
+    ellipse(x,y, 10,10);
+    
+  }
+  endShape();
+  }
 
 function loadLoops() {  
   Tone.Transport.bpm.value = 122;
@@ -154,6 +142,9 @@ function keyPressed() {
                     loop: true,
                     autostart: true
                 }).toDestination();
+
+                // let analyzer = new Tone.Waveform(1024);
+                player.connect(analyzer);
                 
             });
         }

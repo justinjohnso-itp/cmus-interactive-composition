@@ -56,39 +56,51 @@ class TrackVisualizer {
     this.shapeType = shapeType;
     this.activeLoop = null; // Tracks which loop is active
     this.angle = 0;
-    this.size = 40;
+    // this.amount = ;
   }
 
   update() {
+
+    let minDimension = min(width, height);
+    let spacing = minDimension / 8;
+    strokeWeight(minDimension/50);
+
     if (this.activeLoop) {
       if (this.shapeType === "square") {
         this.angle += 0.05; // Rotate
       } else if (this.shapeType === "triangle") {
-        this.size = lerp(this.size, 60, 0.1); // Grow
+        this.angle += 0.05; // Rotate
+      } else if (this.shapeType === "circle") {
+        this.angle += 0.05; // Rotate
       }
-    } else {
-      if (this.shapeType === "triangle") {
-        this.size = lerp(this.size, 40, 0.1); // Shrink back
-      }
-    }
+    } 
   }
 
   display() {
+
+    let minDimension = min(width, height);
+    let spacing = minDimension / 8;
+    strokeWeight(minDimension/50);
+
     push();
-    translate(this.x, this.y);
+    translate(width/2, height/2);
     if (this.shapeType === "square") {
-      rotate(this.angle);
-      rectMode(CENTER);
-      fill(this.activeLoop ? 'black' : 'white');
-      stroke(0);
-      rect(0, 0, 50, 50);
+      stroke(0,255,0);
+      fill(0,0,0);
+      rectMode(CENTER); // rotate square around its center point
+      rotate(this.angle); // clockwise
+      rect(0, 0, spacing * 5, spacing * 5);
     } else if (this.shapeType === "triangle") {
-      fill(this.activeLoop ? 'red' : 'white');
-      stroke(0);
-      triangle(-this.size / 2, this.size / 2, 
-                this.size / 2, this.size / 2, 
-                0, -this.size / 2);
+      stroke(0,255,0);
+      fill(0,0,255);
+      rotate(-this.angle); // counterclockwise
+      triangle(0, -2*spacing , -1.75*spacing, 1*spacing, 1.75*spacing, 1*spacing);
+    } else if (this.shapeType === "circle") {
+      stroke(255,0,0);
+      fill(0,0,255);
+      circle(0,0,spacing*(sin(this.angle) / 2 + 1))
     }
+
     pop();
   }
 }
