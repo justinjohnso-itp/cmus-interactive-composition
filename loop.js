@@ -2,12 +2,12 @@ class Loop {
   constructor(url, trackIndex, loopIndex, name, key, parentVisualizer) {
     this.player = new Tone.Player({
       url: url,
-      loop: true,
+      loop: true
     });
     this.player.toDestination();
     this.quantize = "@1m";
     this.siblings = [];
-    this.key = key; // Assigned key
+    this.key = key;  // Assigned key
     this.parentVisualizer = parentVisualizer; // Reference to visualizer
   }
 
@@ -36,7 +36,7 @@ class Loop {
   scheduleStart() {
     this.player.start(this.quantize);
     for (const sibling of this.siblings) {
-      if (sibling.player.state == "started") {
+      if (sibling.player.state == 'started') {
         sibling.scheduleStop();
       }
     }
@@ -60,9 +60,10 @@ class TrackVisualizer {
   }
 
   update() {
+
     let minDimension = min(width, height);
     let spacing = minDimension / 8;
-    strokeWeight(minDimension / 50);
+    strokeWeight(minDimension/50);
 
     if (this.activeLoop) {
       if (this.shapeType === "square") {
@@ -72,38 +73,32 @@ class TrackVisualizer {
       } else if (this.shapeType === "circle") {
         this.angle += 0.05; // Rotate
       }
-    }
+    } 
   }
 
   display() {
+
     let minDimension = min(width, height);
     let spacing = minDimension / 8;
-    strokeWeight(minDimension / 50);
+    strokeWeight(minDimension/50);
 
     push();
-    translate(width / 2, height / 2);
+    translate(width/2, height/2);
     if (this.shapeType === "square") {
-      stroke(0, 255, 0);
-      fill(0, 0, 0);
+      stroke(0,255,0);
+      fill(0,0,0);
       rectMode(CENTER); // rotate square around its center point
       rotate(this.angle); // clockwise
       rect(0, 0, spacing * 5, spacing * 5);
     } else if (this.shapeType === "triangle") {
-      stroke(0, 255, 0);
-      fill(0, 0, 255);
+      stroke(0,255,0);
+      fill(0,0,255);
       rotate(-this.angle); // counterclockwise
-      triangle(
-        0,
-        -2 * spacing,
-        -1.75 * spacing,
-        1 * spacing,
-        1.75 * spacing,
-        1 * spacing
-      );
+      triangle(0, -2*spacing , -1.75*spacing, 1*spacing, 1.75*spacing, 1*spacing);
     } else if (this.shapeType === "circle") {
-      stroke(255, 0, 0);
-      fill(0, 0, 255);
-      circle(0, 0, spacing * (sin(this.angle) / 2 + 1));
+      stroke(255,0,0);
+      fill(0,0,255);
+      circle(0,0,spacing*(sin(this.angle) / 2 + 1))
     }
 
     pop();
